@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController noteController = TextEditingController();
 
-  void openNoteBox() {
+  void openNoteBox({String? docID}) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -25,7 +25,12 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                   onPressed: () {
                     //add a new note
-                    firestoreService.addNote(noteController.text);
+                    if (docID == null) {
+                      firestoreService.addNote(noteController.text);
+                    }
+                    else {
+                      firestoreService.updateNote(docID, noteController.text);
+                    }
                     // clear the text controller
                     noteController.clear();
                     // close the box
@@ -58,13 +63,32 @@ class _HomePageState extends State<HomePage> {
             return ListView.builder(
               itemCount: noteList.length,
               itemBuilder: (context, index) {
+                // get each individual doc
                 DocumentSnapshot documentSnapshot = noteList[index];
                 String docID = documentSnapshot.id;
+
+                // get more from each doc
                 Map<String, dynamic> data =
                     documentSnapshot.data() as Map<String, dynamic>;
                 String noteText = data['note'];
+                // dispaly as a list tile
                 return ListTile(
                   title: Text(noteText),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // update button
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () => openNoteBox(docID: docID),
+                      ),
+                      // delete button
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => firestoreService.deleteNote(docID),
+                      ),
+                    ],
+                  ),
                 );
               },
             );
