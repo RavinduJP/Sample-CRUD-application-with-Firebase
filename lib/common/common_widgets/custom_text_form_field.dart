@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField(
@@ -40,7 +41,7 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: const BorderSide(
             color: Colors.black12, // Default border color
           ),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
         ),
       ),
     );
