@@ -22,7 +22,7 @@ class WelcomeButton extends StatelessWidget {
         );
       },
       child: Container(
-        padding: EdgeInsets.all(10.sp),
+        padding: EdgeInsets.all(15.sp),
         decoration: BoxDecoration(
           color: color!,
           borderRadius: BorderRadius.only(

@@ -4,23 +4,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField(
       {super.key,
-      this.character,
       required this.lableText,
       required this.hintText,
       this.icon,
-      required this.isObsecureText});
+      required this.isObsecureText,
+      this.keyboardType,
+      required this.controller});
 
   final String lableText;
   final String hintText;
   final IconData? icon;
   final bool isObsecureText;
-  final String? character;
+  final TextInputType? keyboardType;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      obscureText: false,
-      obscuringCharacter: character!,
+      obscureText: isObsecureText,
+      obscuringCharacter: '*',
+      keyboardType: keyboardType,
+      controller: controller,
       decoration: InputDecoration(
         label: Text(lableText),
         prefixIcon: Icon(
