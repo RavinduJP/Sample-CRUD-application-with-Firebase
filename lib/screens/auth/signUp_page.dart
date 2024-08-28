@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sample_crud/screens/auth/signIn_page.dart';
+import 'package:sample_crud/utils/constants/app_colors.dart';
 import '../../common/common_widgets/custom_text_form_field.dart';
 import '../../common/custom_scaffold.dart';
 import '../../theme/theme.dart';
+import '../../utils/constants/routes.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,12 +16,60 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  String name = '', email = '', password = '';
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   final _formSignupKey = GlobalKey<FormState>();
   bool agreePersonalData = true;
+
+  registration() async {
+    if (password != null &&
+        _nameController.text != "" &&
+        _emailController.text != "" &&
+        _passwordController.text != "") {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppColors.secondary,
+            content: Text(
+              "Registered Successfully",
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ),
+        );
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushNamed(Routes.homePage);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red.shade700,
+              content: const Text(
+                "Password Provided is too Weak",
+                style: TextStyle(fontSize: 18.0),
+              ),
+            ),
+          );
+        } else if (e.code == "email-already-in-use") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red.shade700,
+              content: const Text(
+                "Account Already exists",
+                style: TextStyle(fontSize: 18.0),
+              ),
+            ),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20.sp,
                       ),
                       // signup button
-                       SizedBox(
+                      SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           // style: const ButtonStyle(
@@ -136,6 +187,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             if (_formSignupKey.currentState!.validate() &&
                                 agreePersonalData) {
+                              setState(() {
+                                name = _nameController.text;
+                                email = _emailController.text;
+                                password = _passwordController.text;
+                              });
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Processing Data'),
@@ -148,7 +204,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       'Please agree to the processing of personal data'),
                                 ),
                               );
+                              registration();
                             }
+                            Navigator.of(context)
+                                .pushNamed(Routes.signInScreen);
                           },
                           child: const Text('Sign up'),
                         ),
