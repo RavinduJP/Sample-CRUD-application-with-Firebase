@@ -6,6 +6,7 @@ import 'package:sample_crud/pages/home_page.dart';
 
 import '../../common/common_widgets/custom_text_form_field.dart';
 import '../../theme/theme.dart';
+import '../../utils/constants/routes.dart';
 import 'signUp_page.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -21,29 +22,33 @@ class _SignInScreenState extends State<SignInScreen> {
   final _passwordController = TextEditingController();
 
   final _formSignInKey = GlobalKey<FormState>();
-  bool rememberPassword = true;
+  bool rememberPassword = false;
 
   userLogin() async {
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomePage()));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red.shade700,
-            content: const Text(
-              "No User Found for that Email",
-              style: TextStyle(fontSize: 15.0),
-            )));
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red.shade700,
-            content: const Text(
-              "Wrong Password Provided by User",
-              style: TextStyle(fontSize: 15.0),
-            )));
+    if (password != null &&
+        _emailController.text != "" &&
+        _passwordController.text != "") {
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red.shade700,
+              content: const Text(
+                "No User Found for that Email",
+                style: TextStyle(fontSize: 15.0),
+              )));
+        } else if (e.code == 'wrong-password') {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red.shade700,
+              content: const Text(
+                "Wrong Password Provided by User",
+                style: TextStyle(fontSize: 15.0),
+              )));
+        }
       }
     }
   }
@@ -90,7 +95,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       // ignore: prefer_const_constructors
                       CustomTextFormField(
-                        // validateMessage: "Enterw Valid e-mail",
+                        validateMessage: "Enterw Valid e-mail",
                         lableText: "email",
                         hintText: "Enter email",
                         icon: Icons.mail,
@@ -102,7 +107,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: 20.h,
                       ),
                       CustomTextFormField(
-                        // validateMessage: "Enter Valid Password",
+                        validateMessage: "Enter Valid Password",
                         lableText: "Password",
                         hintText: "Enter Password",
                         icon: Icons.lock,
@@ -152,24 +157,24 @@ class _SignInScreenState extends State<SignInScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () async {
-                            if (_formSignInKey.currentState!.validate() &&
+                            if (_formSignInKey.currentState!.validate() ||
                                 rememberPassword) {
                               setState(() {
                                 email = _emailController.text;
                                 password = _passwordController.text;
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Processing Data'),
-                                ),
-                              );
-                            } else if (!rememberPassword) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Please agree to the processing of personal data'),
-                                ),
-                              );
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text('Processing Data'),
+                              //     ),
+                              //   );
+                              // } else if (!rememberPassword) {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text(
+                              //           'Please agree to the processing of personal data'),
+                              //     ),
+                              //   );
                               await userLogin();
                             }
                           },

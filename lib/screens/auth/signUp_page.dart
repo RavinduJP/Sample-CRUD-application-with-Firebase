@@ -23,7 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController = TextEditingController();
 
   final _formSignupKey = GlobalKey<FormState>();
-  bool agreePersonalData = true;
+  bool agreePersonalData = false;
 
   registration() async {
     if (password != null &&
@@ -33,7 +33,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.secondary,
@@ -44,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         );
         // ignore: use_build_context_synchronously
-        Navigator.of(context).pushNamed(Routes.homePage);
+        Navigator.of(context).pushNamed(Routes.signInScreen);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -114,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 40.sp,
                       ),
                       CustomTextFormField(
-                        // validateMessage: "Please Enter Full Name",
+                        validateMessage: "Please Enter Full Name",
                         lableText: "Name",
                         hintText: "Enter Full Name",
                         keyboardType: TextInputType.name,
@@ -126,7 +125,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20.sp,
                       ),
                       CustomTextFormField(
-                        // validateMessage: "Please Enter Valid Email",
+                        validateMessage: "Please Enter Valid Email",
                         lableText: "Email",
                         hintText: "Enter e-mail",
                         keyboardType: TextInputType.emailAddress,
@@ -138,7 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20.sp,
                       ),
                       CustomTextFormField(
-                        // validateMessage: "Please Enter Valid Password",
+                        validateMessage: "Please Enter Valid Password",
                         lableText: "Password",
                         hintText: "Enter password",
                         icon: Icons.lock,
@@ -184,30 +183,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           // style: const ButtonStyle(
                           //   backgroundColor: WidgetStatePropertyAll(AppColors.secondary)
                           // ),
-                          onPressed: () {
-                            if (_formSignupKey.currentState!.validate() &&
+                          onPressed: () async {
+                            if (_formSignupKey.currentState!.validate() ||
                                 agreePersonalData) {
                               setState(() {
                                 name = _nameController.text;
                                 email = _emailController.text;
                                 password = _passwordController.text;
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Processing Data'),
-                                ),
-                              );
-                            } else if (!agreePersonalData) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Please agree to the processing of personal data'),
-                                ),
-                              );
-                              registration();
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //   const SnackBar(
+                              //     content: Text('Processing Data'),
+                              //   ),
+                              // );
+                            // } else if (!agreePersonalData) {
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     const SnackBar(
+                            //       content: Text(
+                            //           'Please agree to the processing of personal data'),
+                            //     ),
+                            //   );
+                             await registration();
                             }
-                            Navigator.of(context)
-                                .pushNamed(Routes.signInScreen);
+                            // Navigator.of(context)
+                            //     .pushNamed(Routes.signInScreen);
                           },
                           child: const Text('Sign up'),
                         ),

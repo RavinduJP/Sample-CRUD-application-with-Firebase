@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sample_crud/firebase_options.dart';
+import 'package:sample_crud/routes/route_generator.dart';
 import 'package:sample_crud/screens/welcome_screen.dart';
 
 Future<void> main() async {
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
+        onGenerateRoute: RouteGenerator.generateRoute,
         home: const WelcomeScreen(),
       ),
     );

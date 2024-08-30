@@ -9,7 +9,8 @@ class CustomTextFormField extends StatelessWidget {
       this.icon,
       required this.isObsecureText,
       this.keyboardType,
-      required this.controller});
+      required this.controller,
+      this.validateMessage});
 
   final String lableText;
   final String hintText;
@@ -17,6 +18,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool isObsecureText;
   final TextInputType? keyboardType;
   final TextEditingController controller;
+  final String? validateMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,12 @@ class CustomTextFormField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.r),
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return validateMessage;
+        }
+        return null;
+      },
     );
   }
 }
