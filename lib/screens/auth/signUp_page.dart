@@ -180,9 +180,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          // style: const ButtonStyle(
-                          //   backgroundColor: WidgetStatePropertyAll(AppColors.secondary)
-                          // ),
                           onPressed: () async {
                             if (_formSignupKey.currentState!.validate() ||
                                 agreePersonalData) {
@@ -191,22 +188,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 email = _emailController.text;
                                 password = _passwordController.text;
                               });
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   const SnackBar(
-                              //     content: Text('Processing Data'),
-                              //   ),
-                              // );
-                            // } else if (!agreePersonalData) {
-                            //   ScaffoldMessenger.of(context).showSnackBar(
-                            //     const SnackBar(
-                            //       content: Text(
-                            //           'Please agree to the processing of personal data'),
-                            //     ),
-                            //   );
-                             await registration();
+                              await registration();
                             }
-                            // Navigator.of(context)
-                            //     .pushNamed(Routes.signInScreen);
                           },
                           child: const Text('Sign up'),
                         ),

@@ -147,6 +147,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                 color: ligthColourSchema.primary,
                               ),
                             ),
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed(Routes.forgotPasswordScreen);
+                            },
                           ),
                         ],
                       ),
@@ -163,18 +167,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                 email = _emailController.text;
                                 password = _passwordController.text;
                               });
-                              //   ScaffoldMessenger.of(context).showSnackBar(
-                              //     const SnackBar(
-                              //       content: Text('Processing Data'),
-                              //     ),
-                              //   );
-                              // } else if (!rememberPassword) {
-                              //   ScaffoldMessenger.of(context).showSnackBar(
-                              //     const SnackBar(
-                              //       content: Text(
-                              //           'Please agree to the processing of personal data'),
-                              //     ),
-                              //   );
                               await userLogin();
                             }
                           },
