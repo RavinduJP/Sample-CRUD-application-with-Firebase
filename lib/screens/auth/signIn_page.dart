@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sample_crud/common/custom_scaffold.dart';
 import 'package:sample_crud/pages/home_page.dart';
+import 'package:sample_crud/services/auth.dart';
 
 import '../../common/common_widgets/custom_text_form_field.dart';
 import '../../theme/theme.dart';
@@ -211,17 +212,25 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          SizedBox(
-                            height: 35.h,
-                            width: 35.h,
-                            child: Image.asset('assets/logos/facebook.png',
-                                fit: BoxFit.cover),
+                          GestureDetector(
+                            child: SizedBox(
+                              height: 35.h,
+                              width: 35.h,
+                              child: Image.asset('assets/logos/facebook.png',
+                                  fit: BoxFit.cover),
+                            ),
+                            onTap: () {},
                           ),
-                          SizedBox(
-                            height: 35.h,
-                            width: 35.h,
-                            child: Image.asset('assets/logos/google.png',
-                                fit: BoxFit.cover),
+                          GestureDetector(
+                            child: SizedBox(
+                              height: 35.h,
+                              width: 35.h,
+                              child: Image.asset('assets/logos/google.png',
+                                  fit: BoxFit.cover),
+                            ),
+                            onTap: () {
+                               AuthMethods().signInWithGoogle(context);
+                            },
                           )
                         ],
                       ),
