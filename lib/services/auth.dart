@@ -1,47 +1,54 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';  
 import 'package:sample_crud/services/database.dart';
+import 'package:sample_crud/services/firestore.dart';
 import 'package:sample_crud/utils/constants/routes.dart';
 
 class AuthMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirestoreService firestoreService = FirestoreService();
 
   getCurrentUser() async {
     return await auth.currentUser;
   }
 
-  signInWithGoogle(BuildContext context) async {
-    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+  Future<UserCredential?> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
-    final GoogleSignInAuthentication? googleSignInAuthentication =
-        await googleSignInAccount?.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication?.idToken,
-        accessToken: googleSignInAuthentication?.accessToken);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-    UserCredential result = await firebaseAuth.signInWithCredential(credential);
+      // Navigate to the new page upon successful sign-in
+      Navigator.of(context)
+          .pushNamed(Routes.homePage); // Replace HomePage with your target page
 
-    User? userDetails = result.user;
+      // return await FirebaseAuth.instance.signInWithCredential(credential);
+      return userCredential;
+    } on Exception catch (e) {
+      // Handle exception
+      print('exception->$e');
+    }
+    return null;
+  }
 
-    if (result != null) {
-      Map<String, dynamic> userInfoMap = {
-        "email": userDetails!.email,
-        "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL,
-        "id": userDetails.uid,
-      };
-      await DatabaseMethods()
-          .addUser(userDetails.uid, userInfoMap)
-          .then((value) {
-        print("check" + value);
-        Navigator.of(context).pushNamed(Routes.homePage);
-      });
+  Future<void> addNoteForCurrentUser(String note) async {
+    User? currentUser = auth.currentUser;
+    if (currentUser != null) {
+      String userId = currentUser.uid;
+      await firestoreService.addNote(userId, note);
+    } else {
+      print('No user signed in');
     }
   }
 }

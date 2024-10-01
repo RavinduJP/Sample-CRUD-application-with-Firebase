@@ -34,6 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
+            
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.secondary,
@@ -103,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     children: [
                       // get started text
                       Text(
-                        'Get Started',
+                        'Create Account',
                         style: TextStyle(
                           fontSize: 30.0,
                           fontWeight: FontWeight.w900,
@@ -251,8 +252,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: Image.asset('assets/logos/google.png',
                                   fit: BoxFit.cover),
                             ),
-                            onTap: () {
+                            onTap: () async {
                               AuthMethods().signInWithGoogle(context);
+                              // AuthMethods().signInWithGoogle(context);
                             },
                           ),
                         ],

@@ -84,7 +84,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Welcome back',
+                        'SIgn In',
                         style: TextStyle(
                           fontSize: 30.sp,
                           fontWeight: FontWeight.w900,
@@ -228,8 +228,9 @@ class _SignInScreenState extends State<SignInScreen> {
                               child: Image.asset('assets/logos/google.png',
                                   fit: BoxFit.cover),
                             ),
-                            onTap: () {
+                            onTap: () async {
                                AuthMethods().signInWithGoogle(context);
+                              // await AuthMethods().signInWithGoogle();
                             },
                           )
                         ],

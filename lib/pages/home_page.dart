@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sample_crud/services/firestore.dart';
 
@@ -12,31 +13,76 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController noteController = TextEditingController();
+  User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   void openNoteBox({String? docID}) {
     showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: noteController,
+        ),
+        actions: [
+          //button to save
+          ElevatedButton(
+            onPressed: () {
+              //add a new note
+              if (currentUser != null) {
+                String userId = currentUser!.uid;
+                if (docID == null) {
+                  setState(() {
+                    firestoreService.addNote(userId, noteController.text);
+                  });
+                } else {
+                  setState(() {
+                    firestoreService.updateNote(docID, noteController.text);
+                  });
+                }
+                // clear the text controller
+                noteController.clear();
+                // close the box
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void deleteConfirm({required String docID}) {
+    showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              content: TextField(
-                controller: noteController,
-              ),
+              content: const Text('Are you sure?'),
               actions: [
-                //button to save
-                ElevatedButton(
-                  onPressed: () {
-                    //add a new note
-                    if (docID == null) {
-                      firestoreService.addNote(noteController.text);
-                    }
-                    else {
-                      firestoreService.updateNote(docID, noteController.text);
-                    }
-                    // clear the text controller
-                    noteController.clear();
-                    // close the box
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Add'),
+                //buttons to confirmation
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('No'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (docID != null) {
+                          setState(() {
+                            firestoreService.deleteNote(docID);
+                          });
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text('Yes'),
+                    ),
+                  ],
                 ),
               ],
             ));
@@ -52,13 +98,23 @@ class _HomePageState extends State<HomePage> {
         onPressed: openNoteBox,
         child: const Icon(Icons.add),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: firestoreService.getNotesStream(),
+      body: FutureBuilder<QuerySnapshot>(
+        future: firestoreService.getNotesStream(currentUser!.uid),
         builder: (context, snapshot) {
-          // if we have data, get all the data
-          if (snapshot.hasData) {
-            List noteList = snapshot.data!.docs;
+          print("USER ID:::: ${currentUser!.uid}");
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            print("SOME ERROR OCCURED::: ${snapshot.error}");
+            return Text("SOME ERROR OCCURED::: ${snapshot.error}");
+          }
 
+          // if we have data, get all the data
+          else if (snapshot.hasData) {
+            List noteList = snapshot.data!.docs;
+            print("noteList==: ${noteList[0]['note']}");
             // display as a list
             return ListView.builder(
               itemCount: noteList.length,
@@ -84,16 +140,17 @@ class _HomePageState extends State<HomePage> {
                       ),
                       // delete button
                       IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => firestoreService.deleteNote(docID),
-                      ),
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => deleteConfirm(docID: docID)),
                     ],
                   ),
                 );
               },
             );
           } else {
-            return const Text("No Notes...");
+            return const Center(
+              child: Text("NoData"),
+            );
           }
         },
       ),
