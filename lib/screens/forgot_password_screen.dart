@@ -25,6 +25,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   resetPassword() async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (!mounted) return;
       // Navigator.of(context).pushNamed(Routes.passwordResetEmailSendAcreen);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
@@ -32,6 +33,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         style: TextStyle(fontSize: 20.sp),
       )));
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
       if (e.code == "user-not-found") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -116,16 +118,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 email = _emailController.text;
                               });
                               await resetPassword();
+                              if (!mounted) return;
                               // Navigator.of(context).pushNamed(
                               //     Routes.passwordResetEmailSendAcreen);
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PasswordResetEmailSendScreen(
-                                          email: email),
-                                ),
-                              );
-
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: (context) =>
+                              //         PasswordResetEmailSendScreen(
+                              //             email: email),
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PasswordResetEmailSendScreen(
+                                            email: email,
+                                          )));
                             }
                           },
                           child: const Text('Send email'),
