@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sample_crud/routes/route_generator.dart';
 import 'package:sample_crud/screens/welcome_screen.dart';
+import 'package:sample_crud/services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await initNotifications();
   runApp(const MyApp());
 }
 
@@ -33,4 +35,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

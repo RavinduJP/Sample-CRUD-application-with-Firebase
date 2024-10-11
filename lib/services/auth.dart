@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';  
-import 'package:sample_crud/services/database.dart';
 import 'package:sample_crud/services/firestore.dart';
 import 'package:sample_crud/utils/constants/routes.dart';
 
